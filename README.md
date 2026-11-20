@@ -37,7 +37,7 @@ docker compose up --build
 
 ### Render free demo
 
-Create one Render Docker web service from this repository and set its Start Command to `node dist/render.js` to run the API and Temporal worker together. Add `REDIS_URL` and `TEMPORAL_ADDRESS` in Render's environment; Render provides `PORT`, and supplier URLs are derived from `RENDER_EXTERNAL_URL`. This still requires reachable Temporal and Redis endpoints. Render's free service sleeps when idle and may restart, so use this setup for demos.
+Create one Render Docker web service from this repository and set its Start Command to `node dist/render.js` to run the API and Temporal worker together. The deployed URL is `https://tripare-ai-task.onrender.com`; Render provides it as `RENDER_EXTERNAL_URL`, and the app derives the two supplier URLs from it. Add `REDIS_URL` and `TEMPORAL_ADDRESS` in Render's environment; Render provides `PORT`. This still requires reachable Temporal and Redis endpoints. Render's free service sleeps when idle and may restart, so use this setup for demos.
 
 The API is at `http://localhost:3000`, Temporal's web UI is at `http://localhost:8233`, and Redis is available to the other containers on port 6379. The first build may take a few minutes.
 
