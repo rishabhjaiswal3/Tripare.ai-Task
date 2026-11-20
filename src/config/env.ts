@@ -12,16 +12,22 @@ function numberFromEnv(name: string, fallback: number): number {
 
 const port = numberFromEnv('PORT', 3000);
 const serviceBaseUrl = process.env.RENDER_EXTERNAL_URL ?? `http://localhost:${port}`;
+const nodeEnv = process.env.NODE_ENV ?? 'development';
+const redisUrl = process.env.REDIS_URL;
+
+if (nodeEnv === 'production' && !redisUrl) {
+  throw new Error('REDIS_URL is required in production. Add it with this exact uppercase name.');
+}
 
 export const config = {
   port,
-  redisUrl: process.env.REDIS_URL ?? 'redis://127.0.0.1:6379',
+  redisUrl: redisUrl ?? 'redis://127.0.0.1:6379',
   temporalAddress: process.env.TEMPORAL_ADDRESS ?? 'localhost:7233',
   temporalTaskQueue: process.env.TEMPORAL_TASK_QUEUE ?? 'hotel-offer-task-queue',
   supplierAUrl: process.env.SUPPLIER_A_URL ?? `${serviceBaseUrl}/supplierA/hotels`,
   supplierBUrl: process.env.SUPPLIER_B_URL ?? `${serviceBaseUrl}/supplierB/hotels`,
   supplierTimeoutMs: numberFromEnv('SUPPLIER_TIMEOUT_MS', 5000),
   cacheTtlSeconds: numberFromEnv('CACHE_TTL_SECONDS', 3600),
-  nodeEnv: process.env.NODE_ENV ?? 'development',
+  nodeEnv,
 };
 
