@@ -1,0 +1,64 @@
+
+
+services:
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  temporal:
+    image: temporalio/temporal:latest
+    command: ["server", "start-dev", "--ip", "0.0.0.0"]
+    ports:
+      - "${TEMPORAL_PORT:-7233}:7233"
+      - "${TEMPORAL_UI_PORT:-8233}:8233"
+    healthcheck:
+      test: ["CMD", "temporal", "operator", "cluster", "health", "--address", "127.0.0.1:7233"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  api:
+    build: .
+    image: hotel-offer-app:latest
+    command: ["node", "dist/api.js"]
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: ${PORT:-3000}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      TEMPORAL_ADDRESS: ${TEMPORAL_ADDRESS:-temporal:7233}
+      SUPPLIER_A_URL: ${SUPPLIER_A_URL:-http://api:3000/supplierA/hotels}
+      SUPPLIER_B_URL: ${SUPPLIER_B_URL:-http://api:3000/supplierB/hotels}
+    ports:
+      - "${API_PORT:-3000}:3000"
+    depends_on:
+      redis:
+        condition: service_healthy
+      temporal:
+        condition: service_healthy
+
+  worker:
+    image: hotel-offer-app:latest
+    command: ["node", "dist/worker.js"]
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      TEMPORAL_ADDRESS: ${TEMPORAL_ADDRESS:-temporal:7233}
+      SUPPLIER_A_URL: ${SUPPLIER_A_URL:-http://api:3000/supplierA/hotels}
+      SUPPLIER_B_URL: ${SUPPLIER_B_URL:-http://api:3000/supplierB/hotels}
+    depends_on:
+      redis:
+        condition: service_healthy
+      temporal:
+        condition: service_healthy
+      api:
+        condition: service_started
+
+volumes:
+  redis-data:
