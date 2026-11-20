@@ -21,6 +21,9 @@ export function createApp() {
   const supplierController = new SupplierController();
 
   app.disable('x-powered-by');
+  // Render is behind one trusted reverse proxy; express-rate-limit uses this
+  // setting to derive the client IP from X-Forwarded-For.
+  app.set('trust proxy', 1);
   app.use(helmet());
   app.use(requestLogger);
   app.use(express.json({ limit: '10kb', strict: true }));
