@@ -3,7 +3,7 @@ import { NativeConnection, Worker } from '@temporalio/worker';
 import { config } from './config/env';
 import * as activities from './temporal/activities/hotel.activities';
 
-async function run(): Promise<void> {
+export async function startTemporalWorker() {
   const connection = await NativeConnection.connect({ address: config.temporalAddress });
   const worker = await Worker.create({
     connection,
@@ -13,11 +13,26 @@ async function run(): Promise<void> {
     activities,
   });
   console.info(`[worker] listening on ${config.temporalTaskQueue}`);
-  await worker.run();
+  const run = worker.run();
+  return {
+    run,
+    async shutdown(): Promise<void> {
+      worker.shutdown();
+      try {
+        await run;
+      } finally {
+        await connection.close();
+      }
+    },
+  };
 }
 
-run().catch((error) => {
-  console.error('[worker] stopped unexpectedly', error);
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  startTemporalWorker()
+    .then(({ run }) => run)
+    .catch((error) => {
+      console.error('[worker] stopped unexpectedly', error);
+      process.exitCode = 1;
+    });
+}
 
