@@ -31,10 +31,10 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: ${PORT:-3000}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
-      TEMPORAL_ADDRESS: ${TEMPORAL_ADDRESS:-temporal:7233}
-      SUPPLIER_A_URL: ${SUPPLIER_A_URL:-http://api:3000/supplierA/hotels}
-      SUPPLIER_B_URL: ${SUPPLIER_B_URL:-http://api:3000/supplierB/hotels}
+      REDIS_URL: ${COMPOSE_REDIS_URL:-redis://redis:6379}
+      TEMPORAL_ADDRESS: ${COMPOSE_TEMPORAL_ADDRESS:-temporal:7233}
+      SUPPLIER_A_URL: ${COMPOSE_SUPPLIER_A_URL:-http://api:3000/supplierA/hotels}
+      SUPPLIER_B_URL: ${COMPOSE_SUPPLIER_B_URL:-http://api:3000/supplierB/hotels}
     ports:
       - "${API_PORT:-3000}:3000"
     depends_on:
@@ -48,10 +48,10 @@ services:
     command: ["node", "dist/worker.js"]
     environment:
       NODE_ENV: ${NODE_ENV:-production}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
-      TEMPORAL_ADDRESS: ${TEMPORAL_ADDRESS:-temporal:7233}
-      SUPPLIER_A_URL: ${SUPPLIER_A_URL:-http://api:3000/supplierA/hotels}
-      SUPPLIER_B_URL: ${SUPPLIER_B_URL:-http://api:3000/supplierB/hotels}
+      REDIS_URL: ${COMPOSE_REDIS_URL:-redis://redis:6379}
+      TEMPORAL_ADDRESS: ${COMPOSE_TEMPORAL_ADDRESS:-temporal:7233}
+      SUPPLIER_A_URL: ${COMPOSE_SUPPLIER_A_URL:-http://api:3000/supplierA/hotels}
+      SUPPLIER_B_URL: ${COMPOSE_SUPPLIER_B_URL:-http://api:3000/supplierB/hotels}
     depends_on:
       redis:
         condition: service_healthy
