@@ -9,5 +9,5 @@ RUN npm run build
 RUN npm prune --omit=dev && npm cache clean --force
 ENV NODE_ENV=production
 EXPOSE 3000
-CMD ["node", "dist/api.js"]
+CMD ["node", "dist/render.js"]
 
