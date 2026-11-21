@@ -13,7 +13,8 @@ export class SupplierModel {
       const body: unknown = await response.json();
       if (!Array.isArray(body)) throw new Error('Expected array response');
       return body as SupplierHotel[];
-    } catch {
+    } catch (error) {
+      console.error(`[supplier] ${supplier} request to ${url.origin}${url.pathname} failed:`, error instanceof Error ? error.message : error);
       throw new AppError(`${supplier} is unavailable.`, 502, 'SUPPLIER_UNAVAILABLE');
     }
   }

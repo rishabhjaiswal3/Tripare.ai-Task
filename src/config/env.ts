@@ -11,7 +11,8 @@ function numberFromEnv(name: string, fallback: number): number {
 }
 
 const port = numberFromEnv('PORT', 3000);
-const serviceBaseUrl = process.env.RENDER_EXTERNAL_URL ?? `http://localhost:${port}`;
+// Suppliers are served by this same process, so call them over localhost (works on Render too).
+const serviceBaseUrl = `http://localhost:${port}`;
 const nodeEnv = process.env.NODE_ENV ?? 'development';
 const redisUrl = process.env.REDIS_URL;
 const temporalAddress = process.env.TEMPORAL_ADDRESS;
