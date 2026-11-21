@@ -28,6 +28,9 @@ export const config = {
   port,
   redisUrl: redisUrl ?? 'redis://127.0.0.1:6379',
   temporalAddress: temporalAddress ?? 'localhost:7233',
+  temporalNamespace: process.env.TEMPORAL_NAMESPACE || 'default',
+  // When set (Temporal Cloud), connections use TLS + API key auth; unset keeps plain local connections.
+  temporalApiKey: process.env.TEMPORAL_API_KEY || undefined,
   temporalTaskQueue: process.env.TEMPORAL_TASK_QUEUE ?? 'hotel-offer-task-queue',
   supplierAUrl: process.env.SUPPLIER_A_URL ?? `${serviceBaseUrl}/supplierA/hotels`,
   supplierBUrl: process.env.SUPPLIER_B_URL ?? `${serviceBaseUrl}/supplierB/hotels`,

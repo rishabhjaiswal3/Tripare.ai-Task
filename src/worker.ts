@@ -2,12 +2,13 @@
 import { NativeConnection, Worker } from '@temporalio/worker';
 import { config } from './config/env';
 import * as activities from './temporal/activities/hotel.activities';
+import { temporalConnectionOptions } from './temporal/connection.options';
 
 export async function startTemporalWorker() {
-  const connection = await NativeConnection.connect({ address: config.temporalAddress });
+  const connection = await NativeConnection.connect(temporalConnectionOptions());
   const worker = await Worker.create({
     connection,
-    namespace: 'default',
+    namespace: config.temporalNamespace,
     taskQueue: config.temporalTaskQueue,
     workflowsPath: require.resolve('./temporal/workflows/hotel.workflow'),
     activities,
